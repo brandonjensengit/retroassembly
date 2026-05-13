@@ -13,19 +13,12 @@ export async function getRom(params: { fileName: string; platform: PlatformName 
   }
 
   const { fileName, platform } = params
-  const { currentUser, db } = getContext().var
+  const { db } = getContext().var
   const [result] = await db.library
     .select({ id: romTable.id })
     .from(romTable)
     .orderBy(romTable.fileName)
-    .where(
-      and(
-        eq(romTable.fileName, fileName),
-        eq(romTable.platform, platform),
-        eq(romTable.userId, currentUser.id),
-        eq(romTable.status, 1),
-      ),
-    )
+    .where(and(eq(romTable.fileName, fileName), eq(romTable.platform, platform), eq(romTable.status, 1)))
   if (result) {
     return getRom({ id: result.id })
   }

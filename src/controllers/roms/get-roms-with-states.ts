@@ -31,13 +31,7 @@ export async function getRomsWithStates({ page = 1, pageSize = 20 } = {}) {
         eq(favoriteTable.status, statusEnum.normal),
       ),
     )
-    .where(
-      and(
-        eq(romTable.userId, currentUser.id),
-        eq(romTable.status, statusEnum.normal),
-        inArray(romTable.platform, preference.ui.platforms),
-      ),
-    )
+    .where(and(eq(romTable.status, statusEnum.normal), inArray(romTable.platform, preference.ui.platforms)))
     .groupBy(
       romTable.id,
       romTable.fileName,
@@ -55,11 +49,7 @@ export async function getRomsWithStates({ page = 1, pageSize = 20 } = {}) {
 
   const roms = romsRaw.map(({ isFavorite, ...rom }) => Object.assign(rom, { isFavorite: Boolean(isFavorite) }))
 
-  const where = and(
-    eq(romTable.userId, currentUser.id),
-    eq(romTable.status, statusEnum.normal),
-    inArray(romTable.platform, preference.ui.platforms),
-  )
+  const where = and(eq(romTable.status, statusEnum.normal), inArray(romTable.platform, preference.ui.platforms))
   const res = await library
     .select({ total: countDistinct(romTable.id) })
     .from(romTable)

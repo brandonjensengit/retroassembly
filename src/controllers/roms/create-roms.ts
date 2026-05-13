@@ -93,7 +93,7 @@ async function prepareRomData(files: File[], gameInfoList: QueryResponse | undef
         libretroGameId: libretro?.id,
         platform,
         rawGameMetadata: launchbox || libretro ? { launchbox, libretro } : undefined,
-        userId: currentUser.id,
+        uploadedBy: currentUser.id,
       }
 
       return romData
@@ -102,7 +102,7 @@ async function prepareRomData(files: File[], gameInfoList: QueryResponse | undef
 }
 
 async function findExistingRoms(files: File[], platform: PlatformName) {
-  const { currentUser, db } = getContext().var
+  const { db } = getContext().var
   const { library } = db
 
   const fileNames = files.map((file) => file.name)
@@ -116,28 +116,14 @@ async function findExistingRoms(files: File[], platform: PlatformName) {
       const chunkResults = await library
         .select()
         .from(romTable)
-        .where(
-          and(
-            eq(romTable.userId, currentUser.id),
-            eq(romTable.platform, platform),
-            eq(romTable.status, 1),
-            inArray(romTable.fileName, fileNameChunk),
-          ),
-        )
+        .where(and(eq(romTable.platform, platform), eq(romTable.status, 1), inArray(romTable.fileName, fileNameChunk)))
       existingRoms.push(...chunkResults)
     }
   } else {
     existingRoms = await library
       .select()
       .from(romTable)
-      .where(
-        and(
-          eq(romTable.userId, currentUser.id),
-          eq(romTable.platform, platform),
-          eq(romTable.status, 1),
-          inArray(romTable.fileName, fileNames),
-        ),
-      )
+      .where(and(eq(romTable.platform, platform), eq(romTable.status, 1), inArray(romTable.fileName, fileNames)))
   }
 
   // Create a map for O(1) lookup by fileName
