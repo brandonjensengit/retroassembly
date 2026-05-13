@@ -50,6 +50,13 @@
       "when": 1778712539942,
       "tag": "0006_sso_user_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1778713977220,
+      "tag": "0007_rom_uploaded_by_rename",
+      "breakpoints": true
     }
   ]
 }
