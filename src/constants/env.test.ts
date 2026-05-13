@@ -12,7 +12,7 @@ describe('assertAuthentikEnv', () => {
         RETROASSEMBLY_RUN_TIME_AUTHENTIK_UPLOADER_GROUP: 'g',
         RETROASSEMBLY_RUN_TIME_SESSION_SECRET: 'sssss',
       }),
-    ).toThrow(/AUTHENTIK_ISSUER/)
+    ).toThrow(/Missing required env var.*AUTHENTIK_ISSUER/u)
   })
 
   it('returns the typed config when all vars present', () => {
@@ -38,6 +38,6 @@ describe('assertAuthentikEnv', () => {
         RETROASSEMBLY_RUN_TIME_AUTHENTIK_UPLOADER_GROUP: 'g',
         RETROASSEMBLY_RUN_TIME_SESSION_SECRET: 'short',
       }),
-    ).toThrow(/SESSION_SECRET/)
+    ).toThrow(/SESSION_SECRET must be at least 16 characters/u)
   })
 })

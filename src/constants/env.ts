@@ -23,7 +23,6 @@ export function getRunTimeEnv() {
       RETROASSEMBLY_RUN_TIME_AUTHENTIK_CLIENT_ID: '',
       RETROASSEMBLY_RUN_TIME_AUTHENTIK_CLIENT_SECRET: '',
       RETROASSEMBLY_RUN_TIME_AUTHENTIK_ISSUER: '',
-      RETROASSEMBLY_RUN_TIME_AUTHENTIK_LOGIN_BUTTON_LABEL: 'Log in with SSO',
       RETROASSEMBLY_RUN_TIME_AUTHENTIK_REDIRECT_URI: '',
       RETROASSEMBLY_RUN_TIME_AUTHENTIK_UPLOADER_GROUP: '',
       RETROASSEMBLY_RUN_TIME_DATA_DIRECTORY: path.resolve('data'),
@@ -68,7 +67,7 @@ export interface AuthentikConfig {
   uploaderGroup: string
 }
 
-export function assertAuthentikEnv(env: Record<string, string | undefined>): AuthentikConfig {
+export function assertAuthentikEnv(runTimeEnv: Record<string, string | undefined>): AuthentikConfig {
   const required = [
     'RETROASSEMBLY_RUN_TIME_AUTHENTIK_ISSUER',
     'RETROASSEMBLY_RUN_TIME_AUTHENTIK_CLIENT_ID',
@@ -78,21 +77,21 @@ export function assertAuthentikEnv(env: Record<string, string | undefined>): Aut
     'RETROASSEMBLY_RUN_TIME_SESSION_SECRET',
   ] as const
   for (const key of required) {
-    if (!env[key]) {
-      throw new Error(`Missing required env var: ${key.replace('RETROASSEMBLY_RUN_TIME_', '')}`)
+    if (!runTimeEnv[key]) {
+      throw new Error(`Missing required env var: ${key}`)
     }
   }
-  const sessionSecret = env.RETROASSEMBLY_RUN_TIME_SESSION_SECRET!
+  const sessionSecret = runTimeEnv.RETROASSEMBLY_RUN_TIME_SESSION_SECRET!
   if (sessionSecret.length < 16) {
     throw new Error('SESSION_SECRET must be at least 16 characters')
   }
   return {
-    clientId: env.RETROASSEMBLY_RUN_TIME_AUTHENTIK_CLIENT_ID!,
-    clientSecret: env.RETROASSEMBLY_RUN_TIME_AUTHENTIK_CLIENT_SECRET!,
-    issuer: env.RETROASSEMBLY_RUN_TIME_AUTHENTIK_ISSUER!,
-    loginButtonLabel: env.RETROASSEMBLY_RUN_TIME_AUTHENTIK_LOGIN_BUTTON_LABEL || 'Log in with SSO',
-    redirectUri: env.RETROASSEMBLY_RUN_TIME_AUTHENTIK_REDIRECT_URI!,
+    clientId: runTimeEnv.RETROASSEMBLY_RUN_TIME_AUTHENTIK_CLIENT_ID!,
+    clientSecret: runTimeEnv.RETROASSEMBLY_RUN_TIME_AUTHENTIK_CLIENT_SECRET!,
+    issuer: runTimeEnv.RETROASSEMBLY_RUN_TIME_AUTHENTIK_ISSUER!,
+    loginButtonLabel: runTimeEnv.RETROASSEMBLY_RUN_TIME_AUTHENTIK_LOGIN_BUTTON_LABEL || 'Log in with SSO',
+    redirectUri: runTimeEnv.RETROASSEMBLY_RUN_TIME_AUTHENTIK_REDIRECT_URI!,
     sessionSecret,
-    uploaderGroup: env.RETROASSEMBLY_RUN_TIME_AUTHENTIK_UPLOADER_GROUP!,
+    uploaderGroup: runTimeEnv.RETROASSEMBLY_RUN_TIME_AUTHENTIK_UPLOADER_GROUP!,
   }
 }
