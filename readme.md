@@ -25,6 +25,12 @@
   </a>
 </p>
 
+> ## About this fork
+>
+> This fork replaces upstream's local-password + optional Google OAuth with **required Authentik SSO**, and converts the ROM library from per-user to **shared across all logged-in users**. Uploads are gated by membership in a configurable Authentik group; everyone else can browse and play.
+>
+> See [docs/sso-setup.md](docs/sso-setup.md) for deployment. The original upstream project is at [arianrhodsandlot/retroassembly](https://github.com/arianrhodsandlot/retroassembly) — use it if you want the local-password / hosted SaaS flavor.
+
 RetroAssembly is the personal retro game collection cabinet in your browser.
 
 ## Features
@@ -49,25 +55,11 @@ RetroAssembly is the personal retro game collection cabinet in your browser.
 
 ## Getting Started
 
-### Choose Your Setup
+This fork requires an Authentik instance. See [docs/sso-setup.md](docs/sso-setup.md) for the full deployment guide:
 
-You have two options to get started with RetroAssembly:
-
-#### Option 1: Use the Official Hosted Version
-
-> <small>Recommended for most users. Perfect if you want to get started quickly without any setup.</small>
-
-1. Visit [retroassembly.com](https://retroassembly.com/) in your web browser.
-2. _(Optional)_ If you're new here, explore the library and try out the available [demo games](https://retroassembly.com/demo) to see how it works.
-3. [Login](https://retroassembly.com/login) and create your personal game library by uploading your own ROM files.
-4. Once your ROMs are uploaded, select any game from your library to launch it directly in your browser and start playing.
-5. Don't forget to use the in-game menu to save your progress, which will be synchronized for you.
-
-#### Option 2: Self-Host with Docker
-
-> <small>For advanced users who want full control. Perfect if you prefer to host your own instance, have privacy concerns, or want to customize the deployment.</small>
-
-See [RetroAssembly's homepage on Docker Hub](https://hub.docker.com/r/arianrhodsandlot/retroassembly#quick-start).
+1. Create an OAuth2/OpenID Provider, Application, and uploader Group in Authentik.
+2. Copy `.env.example` to `.env` and fill in the Authentik configuration.
+3. Build and run (Docker recipe in the SSO setup guide).
 
 ## Supported Platforms
 
