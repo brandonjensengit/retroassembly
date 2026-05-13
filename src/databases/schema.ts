@@ -57,6 +57,12 @@ export const sessionTable = sqliteTable(
   },
   (table) => [index('idx_sessions_user').on(table.userId, table.status)],
 )
+const romFileSchema = {
+  ...baseSchema,
+  fileId: text().notNull(),
+  uploadedBy: text().notNull(),
+}
+
 export const romTable = sqliteTable(
   'roms',
   {
@@ -80,17 +86,16 @@ export const romTable = sqliteTable(
       launchbox?: any
       libretro?: any
     }>(),
-    ...fileSchema,
+    ...romFileSchema,
   },
   (table) => [
-    index('idx_roms_user_status_platform').on(table.userId, table.status, table.platform),
-    index('idx_roms_user_status_created').on(table.userId, table.status, table.createdAt),
-    index('idx_roms_user_status_released').on(table.userId, table.status, table.gameReleaseDate),
-    index('idx_roms_user_status_name').on(table.userId, table.status, table.fileName),
-    // For delete-roms.ts: find still-referenced files during cleanup
+    index('idx_roms_status_platform').on(table.status, table.platform),
+    index('idx_roms_status_created').on(table.status, table.createdAt),
+    index('idx_roms_status_released').on(table.status, table.gameReleaseDate),
+    index('idx_roms_status_name').on(table.status, table.fileName),
+    index('idx_roms_platform_filename').on(table.platform, table.fileName),
     index('idx_roms_file_status').on(table.fileId, table.status),
-    // For get-rom.ts: lookup ROM by filename when ID not provided
-    index('idx_roms_user_platform_filename').on(table.userId, table.platform, table.fileName),
+    index('idx_roms_uploadedby_status').on(table.uploadedBy, table.status),
   ],
 )
 
