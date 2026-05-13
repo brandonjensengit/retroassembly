@@ -67,7 +67,7 @@ export interface AuthentikConfig {
   uploaderGroup: string
 }
 
-export function assertAuthentikEnv(runTimeEnv: Record<string, string | undefined>): AuthentikConfig {
+export function assertAuthentikEnv(runTimeEnv: Record<string, unknown>): AuthentikConfig {
   const required = [
     'RETROASSEMBLY_RUN_TIME_AUTHENTIK_ISSUER',
     'RETROASSEMBLY_RUN_TIME_AUTHENTIK_CLIENT_ID',
@@ -81,17 +81,18 @@ export function assertAuthentikEnv(runTimeEnv: Record<string, string | undefined
       throw new Error(`Missing required env var: ${key}`)
     }
   }
-  const sessionSecret = runTimeEnv.RETROASSEMBLY_RUN_TIME_SESSION_SECRET!
-  if (sessionSecret.length < 16) {
+  const sessionSecret = runTimeEnv.RETROASSEMBLY_RUN_TIME_SESSION_SECRET
+  if (typeof sessionSecret !== 'string' || sessionSecret.length < 16) {
     throw new Error('SESSION_SECRET must be at least 16 characters')
   }
   return {
-    clientId: runTimeEnv.RETROASSEMBLY_RUN_TIME_AUTHENTIK_CLIENT_ID!,
-    clientSecret: runTimeEnv.RETROASSEMBLY_RUN_TIME_AUTHENTIK_CLIENT_SECRET!,
-    issuer: runTimeEnv.RETROASSEMBLY_RUN_TIME_AUTHENTIK_ISSUER!,
-    loginButtonLabel: runTimeEnv.RETROASSEMBLY_RUN_TIME_AUTHENTIK_LOGIN_BUTTON_LABEL || 'Log in with SSO',
-    redirectUri: runTimeEnv.RETROASSEMBLY_RUN_TIME_AUTHENTIK_REDIRECT_URI!,
+    clientId: runTimeEnv.RETROASSEMBLY_RUN_TIME_AUTHENTIK_CLIENT_ID as string,
+    clientSecret: runTimeEnv.RETROASSEMBLY_RUN_TIME_AUTHENTIK_CLIENT_SECRET as string,
+    issuer: runTimeEnv.RETROASSEMBLY_RUN_TIME_AUTHENTIK_ISSUER as string,
+    loginButtonLabel:
+      (runTimeEnv.RETROASSEMBLY_RUN_TIME_AUTHENTIK_LOGIN_BUTTON_LABEL as string | undefined) || 'Log in with SSO',
+    redirectUri: runTimeEnv.RETROASSEMBLY_RUN_TIME_AUTHENTIK_REDIRECT_URI as string,
     sessionSecret,
-    uploaderGroup: runTimeEnv.RETROASSEMBLY_RUN_TIME_AUTHENTIK_UPLOADER_GROUP!,
+    uploaderGroup: runTimeEnv.RETROASSEMBLY_RUN_TIME_AUTHENTIK_UPLOADER_GROUP as string,
   }
 }

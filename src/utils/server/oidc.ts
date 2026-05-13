@@ -41,13 +41,13 @@ export async function getOidcConfig(): Promise<oidc.Configuration> {
   if (cachedConfig) {
     return cachedConfig
   }
-  const env = assertAuthentikEnv(getRunTimeEnv() as Record<string, string | undefined>)
+  const env = assertAuthentikEnv(getRunTimeEnv())
   cachedConfig = await oidc.discovery(new URL(env.issuer), env.clientId, env.clientSecret)
   return cachedConfig
 }
 
 export function getAuthentikConfig(): AuthentikConfig {
-  return assertAuthentikEnv(getRunTimeEnv() as Record<string, string | undefined>)
+  return assertAuthentikEnv(getRunTimeEnv())
 }
 
 export async function buildAuthorizationUrl(opts: {
