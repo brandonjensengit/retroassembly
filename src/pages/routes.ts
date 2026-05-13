@@ -14,7 +14,6 @@ export const routes = {
   libraryPlatformRom: '/library/platform/:platform/rom/:fileName',
   libraryRoms: '/library/roms',
   login: '/login',
-  loginGoogle: '/login/google',
   logout: '/logout',
 } as const
 
@@ -32,6 +31,5 @@ export default [
   route(routes.libraryPlatform, 'routes/library-platform.tsx'),
   route(routes.libraryPlatformRom, 'routes/library-platform-rom.tsx'),
   route(routes.login, 'routes/login.tsx'),
-  route(routes.loginGoogle, 'routes/login-google.ts'),
   route(routes.logout, 'routes/logout.ts'),
 ] satisfies RouteConfig

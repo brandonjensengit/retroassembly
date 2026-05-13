@@ -5,7 +5,6 @@ import useSWR, { useSWRConfig } from 'swr'
 import { client, parseResponse } from '#@/api/client.ts'
 import { useGlobalLoaderData } from '#@/pages/hooks/use-global-loader-data.ts'
 import { SettingsTitle } from '../settings-title.tsx'
-import { CreateUserDialog } from './create-user-dialog.tsx'
 import { DeleteUserDialog } from './delete-user-dialog.tsx'
 import { UserTabContent } from './user-tab-content.tsx'
 
@@ -14,7 +13,6 @@ export function AccountsSettings() {
   const { mutate } = useSWRConfig()
   const { currentUser } = useGlobalLoaderData()
   const [selectedUserId, setSelectedUserId] = useState<string>(currentUser.id)
-  const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
   const { data: users, error: usersError } = useSWR({ endpoint: 'users', method: 'get' }, () =>
@@ -24,7 +22,7 @@ export function AccountsSettings() {
   // Check if current user is super user (first user)
   const isSuperUser = users && users.length > 0 && users[0].id === currentUser.id
 
-  // Non-super users: Just show password change form without tabs
+  // Non-super users: Just show the account section without tabs
   if (!isSuperUser) {
     return (
       <div>
@@ -70,18 +68,6 @@ export function AccountsSettings() {
                 ) : null}
               </Tabs.Trigger>
             ))}
-            <Tabs.Trigger
-              className='cursor-pointer'
-              onClick={(e) => {
-                e.preventDefault()
-                setCreateDialogOpen(true)
-              }}
-              onMouseDown={(e) => e.preventDefault()}
-              value='+'
-            >
-              <span className='icon-[mdi--plus]' />
-              <span className='ml-1'>{t('auth.addUser')}</span>
-            </Tabs.Trigger>
           </Tabs.List>
 
           {users?.map((user) => (
@@ -91,17 +77,6 @@ export function AccountsSettings() {
           ))}
         </Tabs.Root>
       </Card>
-
-      <CreateUserDialog
-        onOpenChange={setCreateDialogOpen}
-        onSuccess={async (newUserId) => {
-          await mutate({ endpoint: 'users', method: 'get' })
-          if (newUserId) {
-            setSelectedUserId(newUserId)
-          }
-        }}
-        open={createDialogOpen}
-      />
 
       <DeleteUserDialog
         onOpenChange={setDeleteDialogOpen}
