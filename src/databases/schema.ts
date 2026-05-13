@@ -28,13 +28,18 @@ const fileSchema = {
 export const userTable = sqliteTable(
   'users',
   {
-    passwordHash: text().notNull(),
-    registrationIp: text(),
-    registrationUserAgent: text(),
+    displayName: text().notNull().default(''),
+    email: text().notNull().default(''),
+    groups: text({ mode: 'json' })
+      .$type<string[]>()
+      .notNull()
+      .$defaultFn(() => []),
+    lastLoginAt: integer({ mode: 'timestamp_ms' }),
+    oidcSub: text().notNull(),
     username: text().notNull(),
     ...baseSchema,
   },
-  (table) => [index('idx_users_username').on(table.username)],
+  (table) => [uniqueIndex('idx_users_oidc_sub').on(table.oidcSub), index('idx_users_username').on(table.username)],
 )
 
 export const sessionTable = sqliteTable(

@@ -43,6 +43,13 @@
       "when": 1774451081555,
       "tag": "0005_dizzy_big_bertha",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1778712539942,
+      "tag": "0006_sso_user_schema",
+      "breakpoints": true
     }
   ]
 }
