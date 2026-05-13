@@ -1,3 +1,4 @@
+import { eq } from 'drizzle-orm'
 import type { Context } from 'hono'
 import { accepts } from 'hono/accepts'
 import { getCookie } from 'hono/cookie'
@@ -7,6 +8,7 @@ import { getRunTimeEnv } from '#@/constants/env.ts'
 import type { ResolvedPreference } from '#@/constants/preference.ts'
 import { getPreference } from '#@/controllers/preference/get-preference.ts'
 import { getCurrentUser } from '#@/controllers/users/get-current-user.ts'
+import { userTable } from '#@/databases/schema.ts'
 import { locales } from '#@/locales/locales.ts'
 import { defaultLanguage, i18n } from '#@/utils/isomorphic/i18n.ts'
 
@@ -71,13 +73,10 @@ async function getTempUserOrCurrentUser(c: Context) {
   if (isSuperviser) {
     const tempUserId = getCookie(c, 'temp-user-id') || c.req.query('temp-user-id')
     if (tempUserId) {
-      if (c.var.supabase) {
-        const { data } = await c.var.supabase.auth.admin.getUserById(tempUserId)
-        if (data.user) {
-          currentUser = data.user
-        }
-      } else {
-        currentUser = { created_at: new Date().toISOString(), id: tempUserId, username: '' }
+      const { db } = c.var
+      const [row] = await db.library.select().from(userTable).where(eq(userTable.id, tempUserId)).limit(1)
+      if (row) {
+        currentUser = { groups: row.groups, id: row.id, username: row.username }
       }
     }
   }
