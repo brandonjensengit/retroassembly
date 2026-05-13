@@ -1,22 +1,30 @@
+import { eq } from 'drizzle-orm'
 import { getContext } from 'hono/context-storage'
 import { deleteCookie } from 'hono/cookie'
-import { invalidateSession } from '#@/controllers/sessions/invalidate-session.ts'
+import { sessionTable, statusEnum } from '#@/databases/schema.ts'
+import { buildEndSessionUrl } from '#@/utils/server/oidc.ts'
+import type { Route } from './+types/logout.ts'
 
-export async function loader() {
+async function handleLogout() {
   const c = getContext()
-
-  const { supabase, token } = c.var
-
-  if (supabase) {
-    await supabase.auth.signOut()
-  }
+  const { db, token } = c.var
 
   if (token) {
-    await invalidateSession()
-    deleteCookie(c, 'token')
+    await db.library.update(sessionTable).set({ status: statusEnum.deleted }).where(eq(sessionTable.token, token))
   }
+  deleteCookie(c, 'token')
 
-  return c.redirect('/')
+  const { origin } = new URL(c.req.raw.url)
+  const endSessionUrl = await buildEndSessionUrl({ postLogoutRedirectUri: `${origin}/` })
+  throw c.redirect(endSessionUrl?.toString() ?? '/')
+}
+
+export function action(_args: Route.ActionArgs) {
+  return handleLogout()
+}
+
+export function loader(_args: Route.LoaderArgs) {
+  return handleLogout()
 }
 
 export { noop as default } from 'es-toolkit'

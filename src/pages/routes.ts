@@ -1,6 +1,8 @@
 import { route, type RouteConfig } from '@react-router/dev/routes'
 
 export const routes = {
+  authCallback: '/auth/callback',
+  authStart: '/auth/start',
   demoHome: '/demo',
   demoPlatform: '/demo/platform/:platform',
   demoPlatformRom: '/demo/platform/:platform/rom/:fileName',
@@ -17,6 +19,8 @@ export const routes = {
 } as const
 
 export default [
+  route(routes.authStart, 'routes/auth.start.ts'),
+  route(routes.authCallback, 'routes/auth.callback.ts'),
   route(routes.demoHome, 'routes/demo.tsx'),
   route(routes.demoPlatform, 'routes/demo-platform.tsx'),
   route(routes.demoPlatformRom, 'routes/demo-platform-rom.tsx'),
