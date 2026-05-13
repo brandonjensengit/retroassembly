@@ -5,6 +5,7 @@ import { getRunTimeEnv } from '#@/constants/env.ts'
 import { metadata } from '#@/constants/metadata.ts'
 import { cookieConsentStatusKey } from '#@/constants/misc.ts'
 import { getLaunchRecords } from '#@/controllers/launch-records/get-launch-records.ts'
+import { getAuthentikConfig } from '#@/utils/server/oidc.ts'
 
 const { host: officialHost } = new URL(metadata.link)
 
@@ -25,9 +26,17 @@ export function getCommonLoaderData<T>(data: T = {} as T) {
   const { host } = new URL(c.req.url)
   const isOfficialHost = host === officialHost || host.endsWith('-retroassembly.arianrhodsandlot.workers.dev')
 
+  let uploaderGroup = ''
+  try {
+    uploaderGroup = getAuthentikConfig().uploaderGroup
+  } catch {
+    // Authentik env not configured (e.g. dev without OIDC); leave uploaderGroup empty so guards fail closed.
+  }
+
   return {
     cookieConsentStatus,
     currentUser,
+    currentUserGroups: currentUser?.groups ?? [],
     detectedLanguage,
     env,
     isLikelyDesktop,
@@ -36,6 +45,7 @@ export function getCommonLoaderData<T>(data: T = {} as T) {
     preference,
     runtimeKey,
     title: '',
+    uploaderGroup,
     ...data,
   }
 }
