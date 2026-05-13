@@ -21,7 +21,8 @@
     "setup": "node scripts/setup.ts",
     "start": "node --run=serve",
     "tag": "node scripts/tag.ts",
-    "test": "playwright test -c tests/e2e --tsconfig=tests/e2e/tsconfig.playwright.json"
+    "test": "playwright test -c tests/e2e --tsconfig=tests/e2e/tsconfig.playwright.json",
+    "test:unit": "vitest run"
   },
   "dependencies": {
     "better-sqlite3": "12.8.0",
@@ -113,6 +114,7 @@
     "typescript": "6.0.3",
     "vite-plugin-devtools-json": "1.0.0",
     "vite-plus": "0.1.21",
+    "vitest": "^2.1.9",
     "wrangler": "4.76.0",
     "zod": "4.3.6"
   },
