@@ -1,9 +1,8 @@
 import type { PropsWithChildren } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, useLoaderData } from 'react-router'
+import { Link } from 'react-router'
 import { metadata } from '#@/constants/metadata.ts'
 import { Logo } from '#@/pages/components/logo.tsx'
-import type { loader } from '../../routes/login.tsx'
 
 interface PageContainerProps extends PropsWithChildren {
   description?: string
@@ -12,7 +11,6 @@ interface PageContainerProps extends PropsWithChildren {
 
 export function PageContainer({ children, description, title }: Readonly<PageContainerProps>) {
   const { t } = useTranslation()
-  const { formType } = useLoaderData<typeof loader>()
 
   return (
     <>
@@ -30,15 +28,13 @@ export function PageContainer({ children, description, title }: Readonly<PageCon
 
           <div className='mt-4 border-t border-t-(--gray-6) py-8'>{children}</div>
 
-          {formType === 'oauth' ? (
-            <div className='text-center text-xs text-(--color-text)/40'>
-              {t('auth.agreeToTermsPrefix')}{' '}
-              <a className='underline' href='/privacy-policy.md' rel='noopener noreferrer' target='_blank'>
-                {t('common.privacyPolicy')}
-              </a>
-              .
-            </div>
-          ) : null}
+          <div className='text-center text-xs text-(--color-text)/40'>
+            {t('auth.agreeToTermsPrefix')}{' '}
+            <a className='underline' href='/privacy-policy.md' rel='noopener noreferrer' target='_blank'>
+              {t('common.privacyPolicy')}
+            </a>
+            .
+          </div>
         </div>
       </div>
     </>
