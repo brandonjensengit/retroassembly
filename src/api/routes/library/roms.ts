@@ -15,6 +15,7 @@ import { getRom } from '#@/controllers/roms/get-rom.ts'
 import { searchRoms } from '#@/controllers/roms/search-roms.ts'
 import { updateRom } from '#@/controllers/roms/update-rom.ts'
 import { getStates } from '#@/controllers/states/get-states.ts'
+import { requireUploader } from '#@/middlewares/require-uploader.ts'
 import { dateFormatMap } from '#@/utils/isomorphic/i18n.ts'
 import { nanoid } from '#@/utils/server/nanoid.ts'
 import { createFileResponse } from '../utils.ts'
@@ -22,6 +23,8 @@ import { createFileResponse } from '../utils.ts'
 export const roms = new Hono()
   .post(
     '',
+
+    requireUploader(),
 
     zValidator(
       'form',
@@ -199,7 +202,7 @@ export const roms = new Hono()
     },
   )
 
-  .delete(':id', async (c) => {
+  .delete(':id', requireUploader(), async (c) => {
     await deleteRom(c.req.param('id'))
     return c.json(null)
   })
