@@ -20,11 +20,7 @@ export async function createState({ core, rom, state, thumbnail, type }: CreateS
     throw new Error('Unauthorized')
   }
 
-  const [romResult] = await db.library
-    .select()
-    .from(romTable)
-    .where(and(eq(romTable.id, rom), eq(romTable.userId, currentUser.id)))
-    .limit(1)
+  const [romResult] = await db.library.select().from(romTable).where(eq(romTable.id, rom)).limit(1)
 
   const id = nanoid()
   const stateFileId = path.join('states', currentUser.id, romResult.platform, rom, `${id}.state`)

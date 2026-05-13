@@ -31,7 +31,7 @@ export async function getRoms({
 
   const { library } = db
 
-  const conditions = [eq(romTable.userId, currentUser.id), eq(romTable.status, 1)]
+  const conditions = [eq(romTable.status, 1)]
   if (id) {
     conditions.push(eq(romTable.id, id))
   }

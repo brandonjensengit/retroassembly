@@ -153,7 +153,7 @@ export const roms = new Hono()
       const id = c.req.param('id')
       const thumbnailId = c.req.param('thumbnailId')
       const rom = await getRom({ id })
-      assert.ok(rom?.userId === currentUser.id)
+      assert.ok(rom?.uploadedBy === currentUser.id)
       const gameThumbnailFileIds: string[] = rom.gameThumbnailFileIds?.split(',') || []
       pull(gameThumbnailFileIds, [thumbnailId])
       const updatedRom = await updateRom({

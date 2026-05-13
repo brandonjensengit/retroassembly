@@ -13,7 +13,7 @@ export async function deleteRoms(ids: string[]) {
   const deletedRoms = await library
     .update(romTable)
     .set({ status: statusEnum.deleted })
-    .where(and(inArray(romTable.id, ids), eq(romTable.userId, currentUser.id)))
+    .where(inArray(romTable.id, ids))
     .returning({ fileId: romTable.fileId })
 
   await library
