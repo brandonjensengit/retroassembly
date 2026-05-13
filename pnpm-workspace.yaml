@@ -1,1 +1,7 @@
 dangerouslyAllowAllBuilds: true
+
+patchedDependencies:
+  spatial-navigation-ts@1.0.8: patches/spatial-navigation-ts.patch
+  '@microsoft/clarity@1.0.2': patches/@microsoft__clarity.patch
+  goodcodes-parser@2.5.0: patches/goodcodes-parser.patch
+  selector-set@1.1.5: patches/selector-set.patch
