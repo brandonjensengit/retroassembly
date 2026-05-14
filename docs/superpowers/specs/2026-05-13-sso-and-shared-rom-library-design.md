@@ -8,7 +8,7 @@
 
 Pivot this fork so that:
 
-1. Authentication is handled exclusively by an external Authentik SSO instance (initially `auth.example.com`, but fully configurable for any Authentik deployment).
+1. Authentication is handled exclusively by an external Authentik SSO instance (fully configurable for any Authentik deployment).
 2. The ROM library is **shared** across all authenticated users instead of being scoped per-user. Uploads of new ROMs are restricted to members of a configurable Authentik group; everyone else can browse and play everything.
 
 The fork is intended to live on GitHub so the operator of the target Authentik server can self-host it and wire it into their own IdP.

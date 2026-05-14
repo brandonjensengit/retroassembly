@@ -35,7 +35,7 @@ Copy `.env.example` to `.env` and fill in:
 | `RETROASSEMBLY_RUN_TIME_AUTHENTIK_CLIENT_SECRET`      | Client Secret from the Authentik provider                    |
 | `RETROASSEMBLY_RUN_TIME_AUTHENTIK_REDIRECT_URI`       | `https://<your-retroassembly-host>/auth/callback`            |
 | `RETROASSEMBLY_RUN_TIME_AUTHENTIK_UPLOADER_GROUP`     | The Authentik group name (e.g. `retroassembly-uploaders`)    |
-| `RETROASSEMBLY_RUN_TIME_AUTHENTIK_LOGIN_BUTTON_LABEL` | (Optional) Custom button label, e.g. `Log in with Nextuon`   |
+| `RETROASSEMBLY_RUN_TIME_AUTHENTIK_LOGIN_BUTTON_LABEL` | (Optional) Custom button label, e.g. `Log in with SSO`       |
 | `RETROASSEMBLY_RUN_TIME_SESSION_SECRET`               | 32+ random chars; used to sign session cookies               |
 
 The app refuses to start if any of the required variables is empty.
