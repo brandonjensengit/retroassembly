@@ -1,6 +1,29 @@
 import * as oidc from 'openid-client'
 import { assertAuthentikEnv, type AuthentikConfig, getRunTimeEnv } from '#@/constants/env.ts'
 
+/**
+ * Test-mode escape hatch for the OIDC client.
+ *
+ * When `RETROASSEMBLY_RUN_TIME_OIDC_TEST_STUB === '1'`, the network-facing
+ * functions in this module (buildAuthorizationUrl, exchangeCode,
+ * buildEndSessionUrl) short-circuit and return canned values so the Playwright
+ * e2e suite can drive the SSO flow end-to-end without contacting a real
+ * Authentik instance.
+ *
+ * The flag is gated on a specific, opt-in env var so it is impossible to
+ * accidentally activate in production (a normal deployment never sets it).
+ * It is read once at module load — tests must export the env var before the
+ * server boots.
+ *
+ * The other env vars asserted by `assertAuthentikEnv` (issuer, client id,
+ * client secret, redirect uri, uploader group) must still be set to
+ * non-empty values for the app to boot. Tests can use fake values; they are
+ * never sent to a network.
+ */
+const TEST_STUB_ENABLED = process.env.RETROASSEMBLY_RUN_TIME_OIDC_TEST_STUB === '1'
+
+const TEST_STUB_CODE = 'test-code'
+
 interface OidcClaims {
   sub?: string
   email?: string
@@ -55,6 +78,13 @@ export async function buildAuthorizationUrl(opts: {
   codeVerifier: string
   nonce: string
 }): Promise<URL> {
+  if (TEST_STUB_ENABLED) {
+    const env = getAuthentikConfig()
+    const url = new URL(env.redirectUri)
+    url.searchParams.set('code', TEST_STUB_CODE)
+    url.searchParams.set('state', opts.state)
+    return url
+  }
   const cfg = await getOidcConfig()
   const env = getAuthentikConfig()
   const codeChallenge = await oidc.calculatePKCECodeChallenge(opts.codeVerifier)
@@ -74,6 +104,15 @@ export async function exchangeCode(opts: {
   expectedState: string
   expectedNonce: string
 }): Promise<ExtractedClaims> {
+  if (TEST_STUB_ENABLED && opts.currentUrl.searchParams.get('code') === TEST_STUB_CODE) {
+    return {
+      displayName: 'Tester',
+      email: 'tester@example.com',
+      groups: ['retroassembly-uploaders'],
+      oidcSub: 'test-user-sub',
+      username: 'tester',
+    }
+  }
   const cfg = await getOidcConfig()
   const tokens = await oidc.authorizationCodeGrant(cfg, opts.currentUrl, {
     expectedNonce: opts.expectedNonce,
@@ -88,6 +127,9 @@ export async function exchangeCode(opts: {
 }
 
 export async function buildEndSessionUrl(opts: { postLogoutRedirectUri: string }): Promise<URL | undefined> {
+  if (TEST_STUB_ENABLED) {
+    return undefined
+  }
   const cfg = await getOidcConfig()
   const meta = cfg.serverMetadata()
   if (!meta.end_session_endpoint) {
