@@ -1,26 +1,21 @@
 import { test as base } from '@playwright/test'
-import { nanoid } from '#@/utils/server/nanoid.ts'
 
+/**
+ * Test user fixture for the SSO/stub flow.
+ *
+ * The legacy local-password registration flow no longer exists. When the
+ * server is started with `RETROASSEMBLY_RUN_TIME_OIDC_TEST_STUB=1`, the OIDC
+ * client short-circuits and returns a canned identity (see
+ * `src/utils/server/oidc.ts`). All tests therefore share the same stub user.
+ */
 interface User {
-  password: string
   username: string
 }
 
 export const test = base.extend<{ user: User }>({
   user: [
-    async ({ baseURL }, use) => {
-      const user = {
-        password: nanoid(),
-        username: nanoid(),
-      }
-
-      const formData = new FormData()
-      formData.append('username', user.username)
-      formData.append('password', user.password)
-      const apiUrl = new URL('api/v1/auth/register', baseURL)
-      await fetch(apiUrl, { body: formData, method: 'POST' })
-
-      await use(user)
+    async ({ page: _page }, use) => {
+      await use({ username: 'tester' })
     },
     { scope: 'test' },
   ],
