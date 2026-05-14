@@ -3,6 +3,8 @@
 This fork of RetroAssembly requires an Authentik instance for authentication.
 There is no local-password fallback.
 
+> Deploying with Docker? See [docs/docker.md](docker.md) for build/run instructions, a `docker-compose.yml` template, reverse-proxy examples, and the cookie-security note for HTTPS.
+
 ## What you need
 
 - An Authentik instance you can administer
