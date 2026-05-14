@@ -31,7 +31,7 @@ describe('extractUserClaims', () => {
   })
 
   it('throws when sub is missing', () => {
-    expect(() => extractUserClaims({ email: 'x@y' } as never)).toThrow(/sub/)
+    expect(() => extractUserClaims({ email: 'x@y' } as never)).toThrow(/sub/u)
   })
 
   it('falls back to sub when both preferred_username and email are missing', () => {

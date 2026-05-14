@@ -4,6 +4,7 @@ import { defaultRedirectTo } from '#@/constants/auth.ts'
 import { createSession } from '#@/controllers/sessions/create-session.ts'
 import { upsertOidcUser } from '#@/controllers/users/upsert-oidc-user.ts'
 import { exchangeCode, type ExtractedClaims } from '#@/utils/server/oidc.ts'
+import { sanitizeRedirectTo } from '#@/utils/server/safe-redirect.ts'
 import type { Route } from './+types/auth.callback.ts'
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -13,7 +14,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const state = getCookie(c, 'oidc_state')
   const nonce = getCookie(c, 'oidc_nonce')
   const verifier = getCookie(c, 'oidc_verifier')
-  const redirectTo = getCookie(c, 'oidc_redirect_to') ?? defaultRedirectTo
+  const redirectTo = sanitizeRedirectTo(getCookie(c, 'oidc_redirect_to'), defaultRedirectTo)
 
   if (!state || !nonce || !verifier) {
     return new Response('Login state missing or expired. Please try again.', { status: 400 })
