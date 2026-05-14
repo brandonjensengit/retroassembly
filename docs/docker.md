@@ -1,13 +1,13 @@
 # Docker Deployment
 
-A pre-built image is published to Docker Hub at [`braniam/nextuon-retro`](https://hub.docker.com/r/braniam/nextuon-retro). If you just want to run the app, skip to [Run](#run). Build instructions below are for developing/modifying the image.
+A pre-built image is published to Docker Hub at [`braniam/nextuon-arcade`](https://hub.docker.com/r/braniam/nextuon-arcade). If you just want to run the app, skip to [Run](#run). Build instructions below are for developing/modifying the image.
 
 > Configure Authentik first. See [docs/sso-setup.md](sso-setup.md) for creating the OIDC Provider, Application, and uploader group.
 
 ## Pull (most users)
 
 ```bash
-docker pull braniam/nextuon-retro:latest
+docker pull braniam/nextuon-arcade:latest
 ```
 
 ## Build from source (maintainers)
@@ -15,7 +15,7 @@ docker pull braniam/nextuon-retro:latest
 From the repo root:
 
 ```bash
-docker build -t braniam/nextuon-retro:latest .
+docker build -t braniam/nextuon-arcade:latest .
 ```
 
 Build time is ~3-5 minutes on a clean cache. The image is ~250 MB.
@@ -25,8 +25,8 @@ To publish a new version (requires `docker login` to Docker Hub as `braniam`):
 ```bash
 docker buildx build \
   --platform linux/amd64 \
-  -t braniam/nextuon-retro:latest \
-  -t braniam/nextuon-retro:<new-version> \
+  -t braniam/nextuon-arcade:latest \
+  -t braniam/nextuon-arcade:<new-version> \
   --push \
   .
 ```
@@ -48,7 +48,7 @@ docker run -d \
   -e RETROASSEMBLY_RUN_TIME_AUTHENTIK_REDIRECT_URI="https://retroassembly.example.com/auth/callback" \
   -e RETROASSEMBLY_RUN_TIME_AUTHENTIK_UPLOADER_GROUP="retroassembly-uploaders" \
   -e RETROASSEMBLY_RUN_TIME_SESSION_SECRET="$(openssl rand -hex 32)" \
-  braniam/nextuon-retro:latest
+  braniam/nextuon-arcade:latest
 ```
 
 - The app refuses to start if any required env var is missing or empty.
@@ -60,7 +60,7 @@ docker run -d \
 ```yaml
 services:
   retroassembly:
-    image: braniam/nextuon-retro:latest
+    image: braniam/nextuon-arcade:latest
     # Or build from source:
     # build: .
     container_name: retroassembly
@@ -138,7 +138,7 @@ A future revision should expose this via an env var (e.g. `RETROASSEMBLY_RUN_TIM
 
 ```bash
 git pull
-docker build -t braniam/nextuon-retro:latest .
+docker build -t braniam/nextuon-arcade:latest .
 docker compose up -d --force-recreate
 ```
 

@@ -10,7 +10,7 @@ export function HeroMain() {
   return (
     <div className='flex flex-col items-center justify-center'>
       <img alt='Nextuon' className='h-24 w-auto md:h-32 lg:h-40' src='/assets/nextuon-logo.png' />
-      <h1 className='mt-6 text-center font-serif text-3xl font-semibold text-(--gray-12) lg:text-5xl'>retro</h1>
+      <h1 className='mt-6 text-center font-serif text-3xl font-semibold text-(--gray-12) lg:text-5xl'>arcade</h1>
       <div className='relative mt-4 px-10 text-center'>
         <div className='overflow-hidden rounded p-2 font-serif text-xl text-(--gray-10)'>{t('home.tagline')}</div>
       </div>

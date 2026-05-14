@@ -1,4 +1,4 @@
-# Nextuon Retro — Authentik-gated retro game library
+# Nextuon Arcade — Authentik-gated retro game library
 # Pulls the published image from Docker Hub. No local build required.
 #
 # Setup:
@@ -15,16 +15,16 @@
 # Wipe data:                  docker compose down -v   # WARNING destructive
 
 services:
-  nextuon-retro:
-    image: braniam/nextuon-retro:latest
-    container_name: nextuon-retro
+  nextuon-arcade:
+    image: braniam/nextuon-arcade:latest
+    container_name: nextuon-arcade
     restart: unless-stopped
     ports:
       - '8000:8000'
     volumes:
-      - nextuon-retro-data:/app/data
+      - nextuon-arcade-data:/app/data
     env_file:
       - .env
 
 volumes:
-  nextuon-retro-data:
+  nextuon-arcade-data:
