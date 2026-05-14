@@ -1,8 +1,10 @@
 import assert from 'node:assert'
 import path from 'node:path'
 import { zValidator } from '@hono/zod-validator'
+import { and, eq, inArray } from 'drizzle-orm'
 import { pull } from 'es-toolkit'
 import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 import { DateTime } from 'luxon'
 import { z } from 'zod'
 import type { PlatformName } from '#@/constants/platform.ts'
@@ -15,6 +17,8 @@ import { getRom } from '#@/controllers/roms/get-rom.ts'
 import { searchRoms } from '#@/controllers/roms/search-roms.ts'
 import { updateRom } from '#@/controllers/roms/update-rom.ts'
 import { getStates } from '#@/controllers/states/get-states.ts'
+import { romTable } from '#@/databases/schema.ts'
+import { requireUploader } from '#@/middlewares/require-uploader.ts'
 import { dateFormatMap } from '#@/utils/isomorphic/i18n.ts'
 import { nanoid } from '#@/utils/server/nanoid.ts'
 import { createFileResponse } from '../utils.ts'
@@ -22,6 +26,8 @@ import { createFileResponse } from '../utils.ts'
 export const roms = new Hono()
   .post(
     '',
+
+    requireUploader(),
 
     zValidator(
       'form',
@@ -48,6 +54,8 @@ export const roms = new Hono()
   .patch(
     ':id',
 
+    requireUploader(),
+
     zValidator(
       'form',
       z.object({
@@ -64,9 +72,22 @@ export const roms = new Hono()
     ),
 
     async (c) => {
-      const { i18n, preference } = c.var
+      const { currentUser, db, i18n, preference } = c.var
       const form = c.req.valid('form')
       const id = c.req.param('id')
+
+      const [existing] = await db.library
+        .select({ uploadedBy: romTable.uploadedBy })
+        .from(romTable)
+        .where(eq(romTable.id, id))
+        .limit(1)
+      if (!existing) {
+        throw new HTTPException(404, { message: 'ROM not found' })
+      }
+      if (existing.uploadedBy !== currentUser.id) {
+        throw new HTTPException(403, { message: 'Only the uploader can modify this ROM' })
+      }
+
       const dateFormat = preference.ui.dateFormat === 'auto' ? dateFormatMap[i18n.language] : preference.ui.dateFormat
       const gameReleaseDate = form.gameReleaseDate
         ? DateTime.fromFormat(form.gameReleaseDate, dateFormat, { zone: 'utc' }).setZone('utc').toJSDate() || null
@@ -85,6 +106,8 @@ export const roms = new Hono()
   .post(
     ':id/boxart',
 
+    requireUploader(),
+
     zValidator(
       'form',
       z.object({
@@ -95,8 +118,21 @@ export const roms = new Hono()
     async (c) => {
       const form = c.req.valid('form')
 
-      const { currentUser, storage } = c.var
+      const { currentUser, db, storage } = c.var
       const id = c.req.param('id')
+
+      const [existing] = await db.library
+        .select({ uploadedBy: romTable.uploadedBy })
+        .from(romTable)
+        .where(eq(romTable.id, id))
+        .limit(1)
+      if (!existing) {
+        throw new HTTPException(404, { message: 'ROM not found' })
+      }
+      if (existing.uploadedBy !== currentUser.id) {
+        throw new HTTPException(403, { message: 'Only the uploader can modify this ROM' })
+      }
+
       const rom = await getRom({ id })
       assert.ok(rom)
 
@@ -111,14 +147,33 @@ export const roms = new Hono()
   .delete(
     ':id/boxart',
 
+    requireUploader(),
+
     async (c) => {
-      await updateRom({ gameBoxartFileIds: null, id: c.req.param('id') })
+      const { currentUser, db } = c.var
+      const id = c.req.param('id')
+
+      const [existing] = await db.library
+        .select({ uploadedBy: romTable.uploadedBy })
+        .from(romTable)
+        .where(eq(romTable.id, id))
+        .limit(1)
+      if (!existing) {
+        throw new HTTPException(404, { message: 'ROM not found' })
+      }
+      if (existing.uploadedBy !== currentUser.id) {
+        throw new HTTPException(403, { message: 'Only the uploader can modify this ROM' })
+      }
+
+      await updateRom({ gameBoxartFileIds: null, id })
       return c.json(null)
     },
   )
 
   .post(
     ':id/thumbnail',
+
+    requireUploader(),
 
     zValidator(
       'form',
@@ -130,8 +185,21 @@ export const roms = new Hono()
     async (c) => {
       const form = c.req.valid('form')
 
-      const { currentUser, storage } = c.var
+      const { currentUser, db, storage } = c.var
       const id = c.req.param('id')
+
+      const [existing] = await db.library
+        .select({ uploadedBy: romTable.uploadedBy })
+        .from(romTable)
+        .where(eq(romTable.id, id))
+        .limit(1)
+      if (!existing) {
+        throw new HTTPException(404, { message: 'ROM not found' })
+      }
+      if (existing.uploadedBy !== currentUser.id) {
+        throw new HTTPException(403, { message: 'Only the uploader can modify this ROM' })
+      }
+
       const rom = await getRom({ id })
       assert.ok(rom)
 
@@ -153,7 +221,7 @@ export const roms = new Hono()
       const id = c.req.param('id')
       const thumbnailId = c.req.param('thumbnailId')
       const rom = await getRom({ id })
-      assert.ok(rom?.userId === currentUser.id)
+      assert.ok(rom?.uploadedBy === currentUser.id)
       const gameThumbnailFileIds: string[] = rom.gameThumbnailFileIds?.split(',') || []
       pull(gameThumbnailFileIds, [thumbnailId])
       const updatedRom = await updateRom({
@@ -199,13 +267,15 @@ export const roms = new Hono()
     },
   )
 
-  .delete(':id', async (c) => {
+  .delete(':id', requireUploader(), async (c) => {
     await deleteRom(c.req.param('id'))
     return c.json(null)
   })
 
   .delete(
     '',
+
+    requireUploader(),
 
     zValidator(
       'query',
@@ -215,13 +285,25 @@ export const roms = new Hono()
     ),
 
     async (c) => {
+      const { currentUser, db } = c.var
       const query = c.req.valid('query')
       const ids = query.ids
         .split(',')
         .map((id) => id.trim())
         .filter(Boolean)
-      await deleteRoms(ids)
-      return c.json(null)
+
+      const ownedRoms = await db.library
+        .select({ id: romTable.id })
+        .from(romTable)
+        .where(and(eq(romTable.uploadedBy, currentUser.id), inArray(romTable.id, ids)))
+      const ownedIds = ownedRoms.map((r) => r.id)
+
+      if (ownedIds.length === 0) {
+        throw new HTTPException(403, { message: 'No ROMs you uploaded are in this delete request' })
+      }
+
+      await deleteRoms(ownedIds)
+      return c.json({ deleted: ownedIds.length, requested: ids.length })
     },
   )
 

@@ -2,6 +2,7 @@ import { Button, type ButtonProps, DropdownMenu } from '@radix-ui/themes'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { platformMap, type PlatformName } from '#@/constants/platform.ts'
+import { useGlobalLoaderData } from '#@/pages/hooks/use-global-loader-data.ts'
 import { getPlatformIcon } from '#@/utils/client/library.ts'
 import { DialogRoot } from '../../components/dialog-root.tsx'
 import { usePreference } from '../../hooks/use-preference.ts'
@@ -9,6 +10,7 @@ import { UploadDialog } from './upload-dialog.tsx'
 
 export function UploadSelectButton({ variant = 'soft' }: Readonly<{ variant?: ButtonProps['variant'] }>) {
   const { t } = useTranslation()
+  const { currentUserGroups, uploaderGroup } = useGlobalLoaderData()
   const { preference } = usePreference()
   const [key, setKey] = useState(Date.now)
   const [open, setOpen] = useState(false)
@@ -18,6 +20,10 @@ export function UploadSelectButton({ variant = 'soft' }: Readonly<{ variant?: Bu
     setKey(Date.now)
     setSelectedPlatform(platform)
     setOpen(true)
+  }
+
+  if (!currentUserGroups.includes(uploaderGroup)) {
+    return null
   }
 
   return (

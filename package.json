@@ -21,11 +21,13 @@
     "setup": "node scripts/setup.ts",
     "start": "node --run=serve",
     "tag": "node scripts/tag.ts",
-    "test": "playwright test -c tests/e2e --tsconfig=tests/e2e/tsconfig.playwright.json"
+    "test": "playwright test -c tests/e2e --tsconfig=tests/e2e/tsconfig.playwright.json",
+    "test:unit": "vitest run"
   },
   "dependencies": {
     "better-sqlite3": "12.8.0",
-    "hono": "4.12.8"
+    "hono": "4.12.8",
+    "openid-client": "^6.8.4"
   },
   "devDependencies": {
     "@arianrhodsandlot/vite-plus-config": "1.2.3",
@@ -45,8 +47,6 @@
     "@radix-ui/themes": "3.3.0",
     "@react-router/dev": "7.13.1",
     "@react-router/node": "7.13.1",
-    "@supabase/ssr": "0.9.0",
-    "@supabase/supabase-js": "2.99.3",
     "@tailwindcss/typography": "0.5.19",
     "@tailwindcss/vite": "4.2.2",
     "@tsconfig/remix": "2.0.7",
@@ -113,6 +113,7 @@
     "typescript": "6.0.3",
     "vite-plugin-devtools-json": "1.0.0",
     "vite-plus": "0.1.21",
+    "vitest": "^2.1.9",
     "wrangler": "4.76.0",
     "zod": "4.3.6"
   },

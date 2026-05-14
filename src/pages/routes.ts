@@ -1,6 +1,8 @@
 import { route, type RouteConfig } from '@react-router/dev/routes'
 
 export const routes = {
+  authCallback: '/auth/callback',
+  authStart: '/auth/start',
   demoHome: '/demo',
   demoPlatform: '/demo/platform/:platform',
   demoPlatformRom: '/demo/platform/:platform/rom/:fileName',
@@ -12,11 +14,12 @@ export const routes = {
   libraryPlatformRom: '/library/platform/:platform/rom/:fileName',
   libraryRoms: '/library/roms',
   login: '/login',
-  loginGoogle: '/login/google',
   logout: '/logout',
 } as const
 
 export default [
+  route(routes.authStart, 'routes/auth.start.ts'),
+  route(routes.authCallback, 'routes/auth.callback.ts'),
   route(routes.demoHome, 'routes/demo.tsx'),
   route(routes.demoPlatform, 'routes/demo-platform.tsx'),
   route(routes.demoPlatformRom, 'routes/demo-platform-rom.tsx'),
@@ -28,6 +31,5 @@ export default [
   route(routes.libraryPlatform, 'routes/library-platform.tsx'),
   route(routes.libraryPlatformRom, 'routes/library-platform-rom.tsx'),
   route(routes.login, 'routes/login.tsx'),
-  route(routes.loginGoogle, 'routes/login-google.ts'),
   route(routes.logout, 'routes/logout.ts'),
 ] satisfies RouteConfig

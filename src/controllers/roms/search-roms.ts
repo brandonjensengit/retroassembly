@@ -62,7 +62,6 @@ export async function searchRoms(
   const { library } = db
 
   const conditions = [
-    eq(romTable.userId, currentUser.id),
     eq(romTable.status, 1),
     platform ? eq(romTable.platform, platform) : inArray(romTable.platform, preference.ui.platforms),
   ]

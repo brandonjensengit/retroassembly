@@ -2,19 +2,8 @@ import { and, eq, gt } from 'drizzle-orm'
 import { getContext } from 'hono/context-storage'
 import { DateTime } from 'luxon'
 import { sessionTable, statusEnum, userTable } from '#@/databases/schema.ts'
-import { createSupabase } from '#@/utils/server/supabase.ts'
 
 export async function getCurrentUser() {
-  const supabase = createSupabase()
-  if (supabase) {
-    try {
-      const { data } = await supabase.auth.getUser()
-      return data?.user
-    } catch {
-      return
-    }
-  }
-
   const c = getContext()
   const { db, token } = c.var
 
@@ -79,6 +68,7 @@ export async function getCurrentUser() {
   }
 
   return {
+    groups: result.users.groups,
     id: result.users.id,
     username: result.users.username,
   }
