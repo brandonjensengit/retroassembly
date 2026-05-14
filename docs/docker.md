@@ -1,18 +1,37 @@
 # Docker Deployment
 
-This fork ships with a multi-stage Dockerfile that produces a small Alpine-based runtime image.
+A pre-built image is published to Docker Hub at [`braniam/nextuon-retro`](https://hub.docker.com/r/braniam/nextuon-retro). If you just want to run the app, skip to [Run](#run). Build instructions below are for developing/modifying the image.
 
 > Configure Authentik first. See [docs/sso-setup.md](sso-setup.md) for creating the OIDC Provider, Application, and uploader group.
 
-## Build
+## Pull (most users)
+
+```bash
+docker pull braniam/nextuon-retro:latest
+```
+
+## Build from source (maintainers)
 
 From the repo root:
 
 ```bash
-docker build -t retroassembly-sso:latest .
+docker build -t braniam/nextuon-retro:latest .
 ```
 
 Build time is ~3-5 minutes on a clean cache. The image is ~250 MB.
+
+To publish a new version (requires `docker login` to Docker Hub as `braniam`):
+
+```bash
+docker buildx build \
+  --platform linux/amd64 \
+  -t braniam/nextuon-retro:latest \
+  -t braniam/nextuon-retro:<new-version> \
+  --push \
+  .
+```
+
+Add `,linux/arm64` to `--platform` if you need an arm64 image (slower; needs QEMU emulation on amd64 dev machines).
 
 ## Run
 
@@ -29,7 +48,7 @@ docker run -d \
   -e RETROASSEMBLY_RUN_TIME_AUTHENTIK_REDIRECT_URI="https://retroassembly.example.com/auth/callback" \
   -e RETROASSEMBLY_RUN_TIME_AUTHENTIK_UPLOADER_GROUP="retroassembly-uploaders" \
   -e RETROASSEMBLY_RUN_TIME_SESSION_SECRET="$(openssl rand -hex 32)" \
-  retroassembly-sso:latest
+  braniam/nextuon-retro:latest
 ```
 
 - The app refuses to start if any required env var is missing or empty.
@@ -41,7 +60,7 @@ docker run -d \
 ```yaml
 services:
   retroassembly:
-    image: retroassembly-sso:latest
+    image: braniam/nextuon-retro:latest
     # Or build from source:
     # build: .
     container_name: retroassembly
@@ -119,7 +138,7 @@ A future revision should expose this via an env var (e.g. `RETROASSEMBLY_RUN_TIM
 
 ```bash
 git pull
-docker build -t retroassembly-sso:latest .
+docker build -t braniam/nextuon-retro:latest .
 docker compose up -d --force-recreate
 ```
 
