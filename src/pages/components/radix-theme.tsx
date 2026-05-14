@@ -3,7 +3,7 @@ import type { PropsWithChildren } from 'react'
 
 export function RadixTheme({ children }: Readonly<PropsWithChildren>) {
   return (
-    <Theme accentColor='red' grayColor='gray'>
+    <Theme accentColor='blue' grayColor='gray'>
       {children}
     </Theme>
   )

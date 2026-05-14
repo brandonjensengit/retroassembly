@@ -1,8 +1,5 @@
-import { range } from 'es-toolkit'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { metadata } from '#@/constants/metadata.ts'
-import { Logo } from '#@/pages/components/logo.tsx'
 import { ButtonLinks } from '../../../components/button-links.tsx'
 import { DockerDialog } from './docker-dialog.tsx'
 
@@ -12,20 +9,8 @@ export function HeroMain() {
 
   return (
     <div className='flex flex-col items-center justify-center'>
-      <Logo className='size-40' />
-      <h1
-        className='m-4 w-80 bg-clip-text text-center font-serif text-4xl font-semibold text-(--accent-9) lg:w-120 lg:text-6xl'
-        style={{
-          textShadow: range(1, 13)
-            .map(
-              (number) =>
-                `${number}px ${number}px 1px color-mix(in oklab, var(--accent-9) 50%, var(--color-background))`,
-            )
-            .join(','),
-        }}
-      >
-        {metadata.title}
-      </h1>
+      <img alt='Nextuon' className='h-24 w-auto md:h-32 lg:h-40' src='/assets/nextuon-logo.png' />
+      <h1 className='mt-6 text-center font-serif text-3xl font-semibold text-(--gray-12) lg:text-5xl'>retro</h1>
       <div className='relative mt-4 px-10 text-center'>
         <div className='overflow-hidden rounded p-2 font-serif text-xl text-(--gray-10)'>{t('home.tagline')}</div>
       </div>

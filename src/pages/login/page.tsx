@@ -14,8 +14,9 @@ export function LoginPage() {
       description={t('auth.loginToBuildCollection')}
       title={t('auth.loginToTitle', { title: metadata.title })}
     >
+      <img alt='Nextuon' className='mb-6 h-12 w-auto md:h-16' src='/assets/nextuon-logo.png' />
       <a
-        className='bg-accent-9 hover:bg-accent-10 inline-block rounded-md px-6 py-3 font-medium text-white'
+        className='inline-block rounded-md bg-gradient-to-r from-[#2a8aff] to-[#a346d4] px-6 py-3 font-medium text-white shadow-lg transition hover:opacity-90'
         href={startUrl}
       >
         {buttonLabel}
