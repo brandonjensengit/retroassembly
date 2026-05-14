@@ -55,11 +55,11 @@ RetroAssembly is the personal retro game collection cabinet in your browser.
 
 ## Getting Started
 
-This fork requires an Authentik instance. See [docs/sso-setup.md](docs/sso-setup.md) for the full deployment guide:
+This fork requires an Authentik instance.
 
-1. Create an OAuth2/OpenID Provider, Application, and uploader Group in Authentik.
+1. Create an OAuth2/OpenID Provider, Application, and uploader Group in Authentik — see [docs/sso-setup.md](docs/sso-setup.md).
 2. Copy `.env.example` to `.env` and fill in the Authentik configuration.
-3. Build and run (Docker recipe in the SSO setup guide).
+3. Build and run via Docker — see [docs/docker.md](docs/docker.md) for the Dockerfile recipe, `docker-compose.yml` template, and reverse-proxy examples.
 
 ## Supported Platforms
 
