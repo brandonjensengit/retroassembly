@@ -1,0 +1,30 @@
+# Nextuon Retro — Authentik-gated retro game library
+# Pulls the published image from Docker Hub. No local build required.
+#
+# Setup:
+#   1. Copy .env.example to .env and fill in values from your Authentik instance.
+#      See https://github.com/brandonjensengit/retroassembly/blob/main/docs/sso-setup.md
+#      for how to create the Application + Provider + Group.
+#   2. docker compose up -d
+#   3. Put a TLS-terminating reverse proxy (Caddy, nginx, Traefik) in front of
+#      port 8000. Recipes in docs/docker.md.
+#
+# Updating to a newer image:  docker compose pull && docker compose up -d
+# Logs:                       docker compose logs -f
+# Teardown (keeps data):      docker compose down
+# Wipe data:                  docker compose down -v   # WARNING destructive
+
+services:
+  nextuon-retro:
+    image: braniam/nextuon-retro:latest
+    container_name: nextuon-retro
+    restart: unless-stopped
+    ports:
+      - '8000:8000'
+    volumes:
+      - nextuon-retro-data:/app/data
+    env_file:
+      - .env
+
+volumes:
+  nextuon-retro-data:
